@@ -1,11 +1,11 @@
 FROM python:3.11-slim
 
-# Install Ollama client
-RUN pip install ollama
-
-# Copy app
 WORKDIR /app
-COPY llm.py .
 
-# Ollama model
-CMD ["python", "llm.py", "/logs/input.log"]
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+CMD ["python", "log-classifier.py", "/logs/input.log"]

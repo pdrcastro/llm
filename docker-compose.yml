@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  ollama:
+    image: custom-ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    networks:
+      - ollama-net
+    volumes:
+    - ./entrypoint.sh:/entrypoint.sh
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+
+  log-classifier:
+    build: .
+    container_name: log-classifier
+    depends_on:
+      - ollama
+    volumes:
+      - ./logs:/logs
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    command: ["python", "log-classifier.py", "/logs/input.log"]
+    networks:
+      - ollama-net
+
+networks:
+  ollama-net:
+    external: false

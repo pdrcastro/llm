@@ -1,0 +1,38 @@
+2025-07-31 08:15:23,452 INFO  [AuthService] User 'admin' logged in successfully.
+2025-07-31 08:15:24,120 WARN  [CacheService] Cache miss for key: session:12345
+2025-07-31 08:15:25,982 ERROR [Database] Connection timeout while querying table 'orders'.
+2025-07-31 08:15:26,001 DEBUG [WorkerPool] Worker thread #4 started processing task ID=8923.
+127.0.0.1 - - [31/Jul/2025:08:15:30 +0000] "GET /api/v1/users HTTP/1.1" 200 532 "-" "Mozilla/5.0"
+127.0.0.1 - - [31/Jul/2025:08:15:31 +0000] "POST /api/v1/orders HTTP/1.1" 500 210 "-" "curl/7.81.0"
+2025-07-31 08:15:35,441 INFO  [MetricsCollector] CPU usage: 72%, Memory usage: 65%
+2025-07-31 08:15:40,812 ERROR [PaymentService] Payment gateway returned status 502.
+{"timestamp": "2025-07-31T08:15:45Z", "level": "INFO", "service": "NotificationService", "message": "Email sent to user@example.com"}
+{"timestamp": "2025-07-31T08:15:46Z", "level": "ERROR", "service": "NotificationService", "message": "SMTP connection failed"}
+2025-07-31 08:15:50,000 FATAL [System] Out of memory: shutting down process.
+2025-07-31 08:15:53,202 INFO  [SecurityService] Failed login attempt for user 'guest' from IP 192.168.1.44.
+2025-07-31 08:15:55,410 WARN  [NetworkMonitor] High latency detected on interface eth0.
+2025-07-31 08:15:57,832 DEBUG [Database] Executing query: SELECT * FROM users WHERE id=42;
+2025-07-31 08:15:59,122 ERROR [OrderService] Failed to update order #238 due to validation error.
+2025-07-31 08:16:01,654 INFO  [InventoryService] Stock updated for product #8721.
+2025-07-31 08:16:04,899 WARN  [CacheService] Cache size approaching limit (95% full).
+2025-07-31 08:16:07,001 INFO  [MetricsCollector] Disk usage: 81%, IOPS: 320.
+2025-07-31 08:16:10,540 ERROR [Database] Deadlock detected on transaction 18234.
+2025-07-31 08:16:13,789 FATAL [System] Kernel panic detected.
+2025-07-31 08:16:15,345 INFO  [AuthService] User 'jane.doe' logged out.
+2025-07-31 08:16:18,980 DEBUG [WorkerPool] Task 903 completed successfully.
+2025-07-31 08:16:22,774 ERROR [PaymentService] Credit card declined for order #9123.
+127.0.0.1 - - [31/Jul/2025:08:16:25 +0000] "DELETE /api/v1/orders/9123 HTTP/1.1" 403 150 "-" "PostmanRuntime/7.32.2"
+2025-07-31 08:16:29,102 INFO  [NotificationService] Push notification sent to device 4e92ac7f.
+2025-07-31 08:16:33,640 WARN  [SecurityService] Multiple failed login attempts from IP 203.0.113.55.
+2025-07-31 08:16:37,832 DEBUG [Database] Slow query detected: SELECT * FROM orders WHERE status='pending';
+2025-07-31 08:16:41,204 ERROR [InventoryService] Product #9231 out of stock during checkout.
+2025-07-31 08:16:45,510 INFO  [MetricsCollector] Memory usage: 78%, Swap usage: 12%.
+2025-07-31 08:16:48,991 WARN  [CacheService] Redis connection pool exhausted.
+2025-07-31 08:16:52,113 INFO  [SystemMonitor] Uptime: 48 days, 3 hours, 12 minutes.
+2025-07-31 08:16:56,409 FATAL [System] Filesystem corruption detected on /dev/sda1.
+2025-07-31 08:17:00,800 DEBUG [WorkerPool] Worker #7 failed health check.
+2025-07-31 08:17:04,510 INFO  [AuthService] User 'service.bot' logged in successfully.
+127.0.0.1 - - [31/Jul/2025:08:17:09 +0000] "PUT /api/v1/products/8721 HTTP/1.1" 200 412 "-" "curl/7.81.0"
+2025-07-31 08:17:12,721 ERROR [Database] Unable to allocate new connection from pool.
+2025-07-31 08:17:15,932 INFO  [SecurityService] Session expired for user 'michael'.
+2025-07-31 08:17:19,101 WARN  [NetworkMonitor] Packet loss detected: 15%.
