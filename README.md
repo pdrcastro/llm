@@ -53,3 +53,7 @@ docker compose up
 ### Tools 
 
 - Ollama: https://ollama.com/ 
+
+### Example Output
+
+![Example Log Classification Output](img/output.png)
