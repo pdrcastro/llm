@@ -7,6 +7,7 @@ import sys
 # Configuration
 OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 os.environ["OLLAMA_HOST"] = OLLAMA_HOST
+MODEL_NAME = "llama2"
 CATEGORIES = ["infrastructure", "security", "database", "application"]
 
 # --------------------------------------------------------------------
@@ -51,27 +52,44 @@ def wait_for_model(host, model_name_prefix="llama2", timeout=600, interval=10):
     raise RuntimeError(f"Timeout waiting for model '{model_name_prefix}'")
 
 # --------------------------------------------------------------------
-# Classify a single log line
+# Classify a single log line with improved prompt and fuzzy matching
 # --------------------------------------------------------------------
 def classify_log_line(line, model_name):
     prompt = (
-        f"Classify the following log line into one of these categories: {CATEGORIES}. "
-        f"Return only the category name.\nLog line: {line}"
+        f"Classify the following log line into exactly one of these categories: {CATEGORIES}. "
+        f"Reply with only one word from this list: {', '.join(CATEGORIES)}. "
+        f"Log line: {line}"
     )
     try:
-        response = ollama.chat(model_name, prompt)
-        category = response.strip().lower() if isinstance(response, str) else response.result.strip().lower()
-        if category in CATEGORIES:
-            return category
+        response = ollama.chat(model=model_name, messages=[{"role": "user", "content": prompt}])
+
+        # Extract response text
+        if isinstance(response, dict) and "message" in response and "content" in response["message"]:
+            category = response["message"]["content"].strip().lower()
+        elif isinstance(response, str):
+            category = response.strip().lower()
         else:
-            print(f"Warning: Received unknown category '{category}' from model.")
+            category = str(response).strip().lower()
+
+        # Searching matching
+        if "database" in category:
+            return "database"
+        elif "security" in category:
+            return "security"
+        elif "infra" in category or "network" in category or "system" in category:
+            return "infrastructure"
+        elif "application" in category:
             return "application"
+        else:
+            print(f"⚠️ Unknown category '{category}', defaulting to 'application'")
+            return "application"
+
     except Exception as e:
-        print(f"Error classifying line: {e}")
+        print(f"❌ Error classifying line: {e}")
         return "application"
 
 # --------------------------------------------------------------------
-# Process entire log file
+# Process a single log file
 # --------------------------------------------------------------------
 def process_log_file(file_path, model_name):
     categorized_logs = {cat: [] for cat in CATEGORIES}
@@ -82,32 +100,35 @@ def process_log_file(file_path, model_name):
             if not line:
                 continue
             category = classify_log_line(line, model_name)
-            if category in categorized_logs:
-                categorized_logs[category].append(line)
-            else:
-                print(f"Warning: Unknown category '{category}' from line: {line}")
+            categorized_logs[category].append(line)
 
     for cat, lines in categorized_logs.items():
         out_file = f"{cat}_logs.txt"
-        with open(out_file, "w") as f_out:
-            f_out.write("\n".join(lines))
-        print(f"Wrote {len(lines)} lines to {out_file}")
+        with open(out_file, "a") as f_out:
+            f_out.write("\n".join(lines) + "\n")
+        print(f"📄 {len(lines)} lines appended to {out_file}")
+
+# --------------------------------------------------------------------
+# Process multiple log files in a directory
+# --------------------------------------------------------------------
+def process_directory(log_dir, model_name):
+    for filename in os.listdir(log_dir):
+        if filename.endswith(".log") or filename.endswith(".txt"):
+            print(f"🔍 Processing {filename}...")
+            process_log_file(os.path.join(log_dir, filename), model_name)
 
 # --------------------------------------------------------------------
 # Main entry point
 # --------------------------------------------------------------------
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python log-classifier.py <log_file_path>")
-        sys.exit(1)
-
     wait_for_ollama(OLLAMA_HOST)
-    model_name = wait_for_model(OLLAMA_HOST, model_name_prefix="llama2", timeout=900, interval=10)
+    model_name = wait_for_model(OLLAMA_HOST, model_name_prefix=MODEL_NAME, timeout=900, interval=10)
 
-    log_file = sys.argv[1]
-    if not os.path.isfile(log_file):
-        print(f"Log file {log_file} does not exist!")
-        sys.exit(1)
+    log_path = sys.argv[1] if len(sys.argv) > 1 else "/logs/"
 
-    process_log_file(log_file, model_name)
-    print("✅ Log classification complete.")
+    if os.path.isdir(log_path):
+        process_directory(log_path, model_name)
+    elif os.path.isfile(log_path):
+        process_log_file(log_path, model_name)
+    else:
+        print(f"❌ Invalid path: {log_path}")
